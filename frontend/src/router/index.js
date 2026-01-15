@@ -5,6 +5,7 @@ import Generator from '../views/Generator.vue'
 import Results from '../views/Results.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Pricing from '../views/Pricing.vue'
+import DebugRepository from '../views/DebugRepository.vue'
 import AuthCallback from '../components/auth/AuthCallback.vue'
 
 const routes = [
@@ -31,6 +32,12 @@ const routes = [
     name: 'Dashboard',
     component: Dashboard,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/debug',
+    name: 'DebugRepository',
+    component: DebugRepository,
+    meta: { requiresAuth: true, requiresEnterprise: true }
   },
   {
     path: '/pricing',
@@ -66,6 +73,8 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next({ name: 'Home', query: { redirect: to.fullPath } })
+  } else if (to.meta.requiresEnterprise && authStore.subscription !== 'enterprise') {
+    next({ name: 'Pricing' })
   } else {
     next()
   }
